@@ -6,7 +6,6 @@ let express = require("express");
 let app = express();
 let path = require("path");
 
-
 app.use(express.static(path.join(__dirname, "../dist")));
 
 app.get("/", (request, response, next) => response.sendFile(path.join(__dirname, "../browser/index.html")));
