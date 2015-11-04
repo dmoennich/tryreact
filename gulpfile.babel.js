@@ -5,9 +5,12 @@ let gulp = require("gulp");
 let babelify = require("babelify");
 let browserify = require("browserify");
 let source = require("vinyl-source-stream");
+let del = require("del");
 
 
-gulp.task("default", () => {
+gulp.task("clean", () => del(["dist"]));
+
+gulp.task("default", ["clean"],() => {
 
     return browserify({
         entries: ["./browser/js/main.js"],
@@ -17,7 +20,11 @@ gulp.task("default", () => {
         .pipe(source("main-bundle.js"))
         .pipe(gulp.dest("./dist/js"));
 
+});
 
+gulp.task("watch", () => {
+    gulp.watch("./browser/js/**", ["default"])
+    .on("change", (event) => console.log(`${event.path} was changed, running default task...`));
 });
 
 
