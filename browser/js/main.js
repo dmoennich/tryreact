@@ -6,5 +6,5 @@ let ReactDOM = require('react-dom');
 
 ReactDOM.render(
 <h1>KEYS OR NOT</h1>,
-    document.getElementById('main')
+    document.getElementById('content')
 );
