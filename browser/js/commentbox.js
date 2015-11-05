@@ -5,6 +5,7 @@ let React = require("react");
 let $ = require("jquery");
 let CommentList = require("./commentlist");
 let CommentForm = require("./commentform");
+let comEvents = require("./commentevents");
 
 let CommentBox = React.createClass({
     getInitialState: function () {
@@ -36,6 +37,22 @@ let CommentBox = React.createClass({
     componentDidMount: function () {
         this.loadCommentsFromServer();
         setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+        comEvents.register((eventType, comment) => {
+            if (eventType === "delete") {
+                $.ajax({
+                    url: this.props.url,
+                    dataType: 'json',
+                    type: 'DELETE',
+                    data: comment,
+                    success: data => {
+                        this.setState({data: data});
+                    },
+                    error: (xhr, status, err) => {
+                        console.error(this.props.url, status, err.toString());
+                    }
+                });
+            }
+        });
     },
     render: function () {
         return (

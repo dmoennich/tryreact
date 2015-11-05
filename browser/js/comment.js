@@ -3,9 +3,15 @@
  */
 let React = require("react");
 let marked = require("marked");
+let comEvents = require("./commentevents");
 
 
-let comment = React.createClass({
+let Comment = React.createClass({
+    handleDelete: function () {
+        comEvents.notify("delete", {
+            "author": this.props.author,
+            "text": this.props.children.toString()});
+    },
     rawMarkup: function () {
         let rawMarkup = marked(this.props.children.toString(), {sanitize: true});
         return {__html: rawMarkup};
@@ -17,9 +23,10 @@ let comment = React.createClass({
                     {this.props.author}
                 </h2>
                 <span dangerouslySetInnerHTML={this.rawMarkup()} />
+                <button onClick={this.handleDelete}>delete</button>
             </div>
         );
     }
 });
 
-module.exports = comment;
+module.exports = Comment;

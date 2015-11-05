@@ -40,8 +40,18 @@ app.post("/api/comments", (req, res) => {
 });
 
 
-
-
+app.delete("/api/comments", (req, res) => {
+    fs.readFile(COMMENTS_FILE, (err, data) => {
+        let comments = JSON.parse(data);
+        comments.push(req.body);
+        comments = comments.filter(comment => comment.author !== req.body.author ||
+            comment.text !== req.body.text);
+        fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), (err) => {
+            res.setHeader("Cache-Control", "no-cache");
+            res.json(comments);
+        });
+    });
+});
 
 
 app.listen(3000, () => console.log("Listening on port 3000..."));
