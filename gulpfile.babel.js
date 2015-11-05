@@ -22,9 +22,10 @@ gulp.task("default", ["clean"],() => {
 
 });
 
-gulp.task("watch", () => {
+gulp.task("watch", ["default"],() => {
+
     gulp.watch("./browser/js/**", ["default"])
-    .on("change", (event) => console.log(`${event.path} was changed, running default task...`));
+    .on("change", (event) => console.log(`${event.path} was changed`));
 });
 
 

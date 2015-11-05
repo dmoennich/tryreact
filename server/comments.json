@@ -10,5 +10,13 @@
     {
         "author": "Daniel",
         "text": "This is my comment!"
+    },
+    {
+        "author": "Danielo",
+        "text": "lalalala"
+    },
+    {
+        "author": "Some guy",
+        "text": "**fat** text"
     }
 ]

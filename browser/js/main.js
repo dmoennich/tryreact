@@ -7,13 +7,6 @@ let marked = require("marked");
 let $ = require("jquery");
 
 
-
-//let data = [
-//    {author: "Daniel", text: "A nice comment!"},
-//    {author: "some dude", text: "Another nice *comment*!"}
-//];
-
-
 let Comment = React.createClass({
     rawMarkup: function () {
         let rawMarkup = marked(this.props.children.toString(), {sanitize: true});
@@ -34,9 +27,24 @@ let Comment = React.createClass({
 
 
 let CommentForm = React.createClass({
+    handleSubmit: function (event) {
+        event.preventDefault();
+        let author = this.refs.author.value.trim();
+        let text = this.refs.text.value.trim();
+        if (!text || !author) {
+            return;
+        }
+        this.props.onCommentSubmit({author, text});
+        this.refs.author.value = "";
+        this.refs.text.value = "";
+    },
     render: function () {
         return (
-            <div className="commentForm">The form</div>
+            <form className="commentForm" onSubmit={this.handleSubmit}>
+                <input type="text" placeholder="your name" ref="author" />
+                <input type="text" placeholder="say something..." ref="text" />
+                <input type="submit" value="Post" />
+            </form>
         );
     }
 });
@@ -59,6 +67,20 @@ let CommentBox = React.createClass({
     getInitialState: function () {
       return {data: []};
     },
+    handleCommentSubmit: function (comment) {
+        $.ajax({
+            url: this.props.url,
+            dataType: 'json',
+            type: 'POST',
+            data: comment,
+            success: data => {
+                this.setState({data: data});
+            },
+            error: (xhr, status, err) => {
+                console.error(this.props.url, status, err.toString());
+            }
+        });
+    },
     loadCommentsFromServer: function () {
         $.ajax({
             url: this.props.url,
@@ -77,7 +99,7 @@ let CommentBox = React.createClass({
             <div className="commentBox">
                 <h1>Comments</h1>
                 <CommentList data={this.state.data} />
-                <CommentForm />
+                <CommentForm onCommentSubmit={this.handleCommentSubmit} />
             </div>
         );
     }
