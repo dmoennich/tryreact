@@ -6,51 +6,28 @@ let $ = require("jquery");
 let CommentList = require("./commentlist");
 let CommentForm = require("./commentform");
 let comEvents = require("./commentevents");
+let comCom = require("./commentcom");
 
 let CommentBox = React.createClass({
     getInitialState: function () {
         return {data: []};
     },
+    handleXhr: function (response) {
+        response.then(data => this.setState({data}))
+            .then(null, (xhr, status, err) => console.error(status, err.toString()));
+    },
     handleCommentSubmit: function (comment) {
-        $.ajax({
-            url: this.props.url,
-            dataType: 'json',
-            type: 'POST',
-            data: comment,
-            success: data => {
-                this.setState({data: data});
-            },
-            error: (xhr, status, err) => {
-                console.error(this.props.url, status, err.toString());
-            }
-        });
+        this.handleXhr(comCom.newComment(comment));
     },
     loadCommentsFromServer: function () {
-        $.ajax({
-            url: this.props.url,
-            dataType: 'json',
-            cache: false,
-            success: data => this.setState({data: data}),
-            error: (xhr, status, err) => console.error(this.props.url, status, err.toString())
-        });
+        this.handleXhr(comCom.getAll());
     },
     componentDidMount: function () {
         this.loadCommentsFromServer();
         setInterval(this.loadCommentsFromServer, this.props.pollInterval);
         comEvents.register((eventType, comment) => {
             if (eventType === "delete") {
-                $.ajax({
-                    url: this.props.url,
-                    dataType: 'json',
-                    type: 'DELETE',
-                    data: comment,
-                    success: data => {
-                        this.setState({data: data});
-                    },
-                    error: (xhr, status, err) => {
-                        console.error(this.props.url, status, err.toString());
-                    }
-                });
+                this.handleXhr(comCom.delComment(comment));
             }
         });
     },
